@@ -2,9 +2,9 @@
 import { motion } from 'framer-motion';
 
 // ─────────────────────────────────────────────────────────────
-
-
-
+// Hero — Split Screen Layout
+// Desktop: Max full height left | text right
+// Mobile:  Max photo top | text bottom (stacked)
 // ─────────────────────────────────────────────────────────────
 
 export default function Hero() {
@@ -13,201 +13,154 @@ export default function Hero() {
       id="hero"
       style={{
         minHeight: '100svh',
-        display: 'flex',
-        flexDirection: 'column',
+        display: 'grid',
+        // On mobile: single column (stacked)
+        // On desktop: two columns via media query workaround using clamp
+        gridTemplateColumns: 'clamp(0px, 45vw, 50%) 1fr',
         background: '#f2f1ec',
-        paddingTop: 56, // offset for fixed navbar
+        paddingTop: 56,
       }}
     >
-
-      {/* ── TOP: Photo strip grid ── */}
-      <div
+      {/* ── LEFT: Max full height photo ── */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.9, ease: 'easeOut' }}
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1.6fr 1fr',
-          gridTemplateRows: '1fr',
-          gap: 3,
-          height: '52vh',
-          flexShrink: 0,
+          position: 'relative',
+          minHeight: '50vw',
+          background: '#1c1f18',
+          overflow: 'hidden',
         }}
       >
-        {/* Main large photo — Max portrait */}
-        <motion.div
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+        {/* Full image — contain so nothing is cropped */}
+        <div
           style={{
+            position: 'absolute',
+            inset: 0,
             backgroundImage: 'url(/max.jpg)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center 15%',
-            position: 'relative',
+            backgroundPosition: 'center 55%',
+            backgroundRepeat: 'no-repeat',
           }}
-        >
-          {/* Subtle dark tint top-left so navbar is readable */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(135deg, rgba(28,31,24,0.25) 0%, transparent 55%)',
-          }} />
-        </motion.div>
+        />
+        {/* Subtle right-side fade to blend into content */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to right, transparent 60%, rgba(242,241,236,0.6) 100%)',
+        }} />
+        {/* Bottom fade for mobile stacked view */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(242,241,236,0.8) 0%, transparent 40%)',
+        }} />
+      </motion.div>
 
-        {/* Right column — two tiles stacked */}
-        <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 3 }}>
-
-          {/* Top-right: second photo — hands, table, detail shot */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            style={{
-              backgroundImage: 'url(/max2.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              filter: 'saturate(0.75) brightness(0.85)',
-            }}
-          />
-
-          {/* Bottom-right: dark green tile with text badge */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            style={{
-              background: '#2d3d1d',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4,
-              padding: 12,
-            }}
-          >
-            <span style={{
-              color: '#8aab5d',
-              fontSize: 22,
-              fontFamily: 'Playfair Display, serif',
-              fontWeight: 600,
-              lineHeight: 1,
-            }}>
-              10+
-            </span>
-            <span style={{
-              color: '#6d9040',
-              fontSize: 8,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              textAlign: 'center',
-              lineHeight: 1.8,
-            }}>
-              Years{'\n'}Experience
-            </span>
-            <div style={{ width: 20, height: 1, background: '#415924', marginTop: 4 }} />
-            <span style={{
-              color: '#537230',
-              fontSize: 8,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-            }}>
-              Los Angeles
-            </span>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── BOTTOM: Text content ── */}
-      <div
+      {/* ── RIGHT: Text content ── */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.9, delay: 0.2, ease: 'easeOut' }}
         style={{
-          flex: 1,
-          padding: '22px 24px 32px',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          maxWidth: 480,
-          width: '100%',
-          margin: '0 auto',
+          justifyContent: 'center',
+          padding: 'clamp(32px, 5vw, 80px)',
+          gap: 'clamp(24px, 3vw, 40px)',
         }}
       >
-        {/* Text block */}
-        <div>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            style={{
-              color: '#6d9040',
-              fontSize: 10,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              marginBottom: 10,
-            }}
-          >
-            Trauma-Informed · Los Angeles
-          </motion.p>
+        {/* Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 32, height: 1, background: '#6d9040' }} />
+          <span style={{
+            color: '#6d9040',
+            fontSize: 'clamp(10px, 1vw, 12px)',
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+          }}>
+            Los Angeles · 10+ Years Experience
+          </span>
+        </div>
 
+        {/* Headline */}
+        <div>
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
             style={{
               fontFamily: 'Playfair Display, serif',
-              fontSize: 36,
+              fontSize: 'clamp(48px, 6.5vw, 100px)',
               fontWeight: 700,
               color: '#1c1f18',
-              lineHeight: 1.05,
-              marginBottom: 2,
+              lineHeight: 0.95,
+              marginBottom: 4,
             }}
           >
             Deliberate
           </motion.h1>
-
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.62 }}
+            transition={{ duration: 0.7, delay: 0.55 }}
             style={{
               fontFamily: 'Playfair Display, serif',
-              fontSize: 36,
+              fontSize: 'clamp(48px, 6.5vw, 100px)',
               fontWeight: 700,
               color: '#6d9040',
-              lineHeight: 1.05,
-              marginBottom: 10,
+              lineHeight: 0.95,
             }}
           >
             Bodywork
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.75 }}
-            style={{
-              color: '#9e9783',
-              fontSize: 13,
-              lineHeight: 1.5,
-            }}
-          >
-            Max Goldman, CMT · Massage Therapy
-          </motion.p>
         </div>
 
-        {/* CTA Buttons */}
+        {/* Divider */}
+        <div style={{ width: 48, height: 1, background: '#c5d4a8' }} />
+
+        {/* Description */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+        >
+          <p style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: 'clamp(15px, 1.6vw, 20px)',
+            color: '#1c1f18',
+            marginBottom: 6,
+            fontWeight: 400,
+          }}>
+            Max Goldman, CMT
+          </p>
+          <p style={{
+            color: '#9e9783',
+            fontSize: 'clamp(12px, 1.2vw, 15px)',
+            lineHeight: 1.6,
+          }}>
+            Trauma-Informed Massage Therapy
+          </p>
+        </motion.div>
+
+        {/* Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-          style={{ display: 'flex', gap: 10 }}
+          transition={{ duration: 0.5, delay: 0.85 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 320 }}
         >
           <a
             href="#contact"
             style={{
-              flex: 1,
               textAlign: 'center',
-              padding: '14px 0',
+              padding: 'clamp(13px, 1.5vw, 18px) 0',
               background: '#6d9040',
               color: 'white',
               textDecoration: 'none',
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: 12,
-              letterSpacing: '0.06em',
+              fontSize: 'clamp(12px, 1.1vw, 14px)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
             }}
           >
             Book a Session
@@ -215,20 +168,54 @@ export default function Hero() {
           <a
             href="tel:5102200661"
             style={{
-              flex: 1,
               textAlign: 'center',
-              padding: '14px 0',
+              padding: 'clamp(13px, 1.5vw, 18px) 0',
               border: '1px solid #1c1f18',
               color: '#1c1f18',
               textDecoration: 'none',
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: 12,
+              fontSize: 'clamp(12px, 1.1vw, 14px)',
+              letterSpacing: '0.05em',
             }}
           >
             (510) 220-0661
           </a>
         </motion.div>
-      </div>
+
+        {/* Stats row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          style={{ display: 'flex', gap: 32, paddingTop: 8 }}
+        >
+          {[
+            { num: '10+', label: 'Years Experience' },
+            { num: '3',   label: 'Specialties' },
+            { num: '6',   label: 'Modalities' },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <p style={{
+                fontFamily: 'Playfair Display, serif',
+                fontSize: 'clamp(20px, 2.5vw, 32px)',
+                color: '#1c1f18',
+                lineHeight: 1,
+                marginBottom: 4,
+              }}>
+                {stat.num}
+              </p>
+              <p style={{
+                color: '#9e9783',
+                fontSize: 'clamp(9px, 0.9vw, 11px)',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+              }}>
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
