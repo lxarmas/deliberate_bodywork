@@ -1,81 +1,91 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 // ─────────────────────────────────────────────────────────────
-// Hero — Split Screen Layout
-// Desktop: Max full height left | text right
-// Mobile:  Max photo top | text bottom (stacked)
+// Hero — Fully Responsive
+// Mobile  (<768px): photo top half, text bottom half (stacked)
+// Desktop (≥768px): photo left half, text right half (split)
 // ─────────────────────────────────────────────────────────────
 
 export default function Hero() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   return (
     <section
       id="hero"
       style={{
         minHeight: '100svh',
-        display: 'grid',
-        // On mobile: single column (stacked)
-        // On desktop: two columns via media query workaround using clamp
-        gridTemplateColumns: 'clamp(0px, 45vw, 50%) 1fr',
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         background: '#f2f1ec',
         paddingTop: 56,
       }}
     >
-      {/* ── LEFT: Max full height photo ── */}
+      {/* ── PHOTO ── */}
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.9, ease: 'easeOut' }}
         style={{
           position: 'relative',
-          minHeight: '50vw',
-          background: '#1c1f18',
+          // Mobile: top half of screen
+          // Desktop: full left half
+          width: isMobile ? '100%' : '50%',
+          height: isMobile ? '55vw' : 'auto',
+          minHeight: isMobile ? 320 : 'unset',
+          flexShrink: 0,
           overflow: 'hidden',
+          background: '#1c1f18',
         }}
       >
-        {/* Full image — contain so nothing is cropped */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             backgroundImage: 'url(/max.jpg)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center 55%',
+            backgroundPosition: isMobile ? 'center 20%' : 'center 15%',
             backgroundRepeat: 'no-repeat',
           }}
         />
-        {/* Subtle right-side fade to blend into content */}
+        {/* Gradient fade — bottom on mobile, right on desktop */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to right, transparent 60%, rgba(242,241,236,0.6) 100%)',
-        }} />
-        {/* Bottom fade for mobile stacked view */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(to top, rgba(242,241,236,0.8) 0%, transparent 40%)',
+          background: isMobile
+            ? 'linear-gradient(to top, rgba(242,241,236,0.95) 0%, transparent 40%)'
+            : 'linear-gradient(to right, transparent 55%, rgba(242,241,236,0.5) 100%)',
         }} />
       </motion.div>
 
-      {/* ── RIGHT: Text content ── */}
+      {/* ── TEXT ── */}
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.9, delay: 0.2, ease: 'easeOut' }}
+        initial={{ opacity: 0, y: isMobile ? 20 : 0, x: isMobile ? 0 : 20 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.25, ease: 'easeOut' }}
         style={{
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: 'clamp(32px, 5vw, 80px)',
-          gap: 'clamp(24px, 3vw, 40px)',
+          padding: isMobile ? '28px 24px 48px' : 'clamp(40px, 6vw, 90px)',
+          gap: isMobile ? 20 : 'clamp(20px, 3vw, 36px)',
         }}
       >
-        {/* Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 32, height: 1, background: '#6d9040' }} />
+        {/* Eyebrow */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 24, height: 1, background: '#6d9040', flexShrink: 0 }} />
           <span style={{
             color: '#6d9040',
-            fontSize: 'clamp(10px, 1vw, 12px)',
-            letterSpacing: '0.25em',
+            fontSize: isMobile ? 10 : 'clamp(10px, 0.9vw, 12px)',
+            letterSpacing: '0.22em',
             textTransform: 'uppercase',
           }}>
             Los Angeles · 10+ Years Experience
@@ -84,137 +94,121 @@ export default function Hero() {
 
         {/* Headline */}
         <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              fontSize: 'clamp(48px, 6.5vw, 100px)',
-              fontWeight: 700,
-              color: '#1c1f18',
-              lineHeight: 0.95,
-              marginBottom: 4,
-            }}
-          >
+          <h1 style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: isMobile ? 52 : 'clamp(52px, 6.5vw, 100px)',
+            fontWeight: 700,
+            color: '#1c1f18',
+            lineHeight: 0.95,
+            marginBottom: 4,
+          }}>
             Deliberate
-          </motion.h1>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.55 }}
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              fontSize: 'clamp(48px, 6.5vw, 100px)',
-              fontWeight: 700,
-              color: '#6d9040',
-              lineHeight: 0.95,
-            }}
-          >
+          </h1>
+          <h1 style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: isMobile ? 52 : 'clamp(52px, 6.5vw, 100px)',
+            fontWeight: 700,
+            color: '#6d9040',
+            lineHeight: 0.95,
+          }}>
             Bodywork
-          </motion.h1>
+          </h1>
         </div>
 
         {/* Divider */}
-        <div style={{ width: 48, height: 1, background: '#c5d4a8' }} />
+        <div style={{ width: 40, height: 1, background: '#c5d4a8' }} />
 
-        {/* Description */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-        >
+        {/* Name + subtitle */}
+        <div>
           <p style={{
             fontFamily: 'Playfair Display, serif',
-            fontSize: 'clamp(15px, 1.6vw, 20px)',
+            fontSize: isMobile ? 17 : 'clamp(17px, 1.6vw, 22px)',
             color: '#1c1f18',
-            marginBottom: 6,
-            fontWeight: 400,
+            marginBottom: 5,
           }}>
             Max Goldman, CMT
           </p>
           <p style={{
             color: '#9e9783',
-            fontSize: 'clamp(12px, 1.2vw, 15px)',
+            fontSize: isMobile ? 13 : 'clamp(13px, 1.1vw, 15px)',
             lineHeight: 1.6,
           }}>
             Trauma-Informed Massage Therapy
           </p>
-        </motion.div>
+        </div>
 
         {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.85 }}
-          style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 320 }}
-        >
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 10,
+          maxWidth: isMobile ? '100%' : 360,
+        }}>
           <a
             href="#contact"
             style={{
+              flex: 1,
               textAlign: 'center',
-              padding: 'clamp(13px, 1.5vw, 18px) 0',
+              padding: isMobile ? '15px 0' : 'clamp(13px, 1.4vw, 18px) 0',
               background: '#6d9040',
               color: 'white',
               textDecoration: 'none',
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: 'clamp(12px, 1.1vw, 14px)',
-              letterSpacing: '0.1em',
+              fontSize: isMobile ? 13 : 'clamp(12px, 1vw, 14px)',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
             }}
           >
             Book a Session
           </a>
           <a
-            href="tel:5102200661"
+            href="tel:+15102200661"
             style={{
+              flex: 1,
               textAlign: 'center',
-              padding: 'clamp(13px, 1.5vw, 18px) 0',
+              padding: isMobile ? '15px 0' : 'clamp(13px, 1.4vw, 18px) 0',
               border: '1px solid #1c1f18',
               color: '#1c1f18',
               textDecoration: 'none',
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: 'clamp(12px, 1.1vw, 14px)',
-              letterSpacing: '0.05em',
+              fontSize: isMobile ? 13 : 'clamp(12px, 1vw, 14px)',
+              letterSpacing: '0.04em',
             }}
           >
             (510) 220-0661
           </a>
-        </motion.div>
+        </div>
 
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1 }}
-          style={{ display: 'flex', gap: 32, paddingTop: 8 }}
-        >
-          {[
-            { num: '10+', label: 'Years Experience' },
-            { num: '3',   label: 'Specialties' },
-            { num: '6',   label: 'Modalities' },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p style={{
-                fontFamily: 'Playfair Display, serif',
-                fontSize: 'clamp(20px, 2.5vw, 32px)',
-                color: '#1c1f18',
-                lineHeight: 1,
-                marginBottom: 4,
-              }}>
-                {stat.num}
-              </p>
-              <p style={{
-                color: '#9e9783',
-                fontSize: 'clamp(9px, 0.9vw, 11px)',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-              }}>
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </motion.div>
+        {/* Stats — hidden on small mobile to save space */}
+        {!isMobile && (
+          <div style={{ display: 'flex', gap: 36, paddingTop: 8 }}>
+            {[
+              { num: '10+', label: 'Years Experience' },
+              { num: '3',   label: 'Specialties' },
+              { num: '6',   label: 'Modalities' },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p style={{
+                  fontFamily: 'Playfair Display, serif',
+                  fontSize: 'clamp(22px, 2.4vw, 34px)',
+                  color: '#1c1f18',
+                  lineHeight: 1,
+                  marginBottom: 4,
+                }}>
+                  {stat.num}
+                </p>
+                <p style={{
+                  color: '#9e9783',
+                  fontSize: 'clamp(9px, 0.8vw, 11px)',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                }}>
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </section>
   );
