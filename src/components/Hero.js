@@ -84,7 +84,7 @@ export default function Hero() {
           <div style={{ width: 24, height: 1, background: '#6d9040', flexShrink: 0 }} />
           <span style={{
             color: '#6d9040',
-            fontSize: isMobile ? 10 : 'clamp(10px, 0.9vw, 12px)',
+            fontSize: isMobile ? 10 : 'clamp(10px, 0.9vw, 14px)',
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
           }}>
