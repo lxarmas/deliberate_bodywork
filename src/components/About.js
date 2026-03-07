@@ -20,7 +20,7 @@ export default function About() {
       {/* ── Inner container — spreads on desktop ── */}
       <div style={{
         maxWidth: 'clamp(480px, 70vw, 900px)', // ← key line for desktop spread
-        margin: '0 auto',
+        margin: '0 left 18px',
       }}>
 
         {/* Eyebrow label */}
@@ -31,7 +31,7 @@ export default function About() {
           transition={{ duration: 0.5 }}
           style={{
             color: '#537230',
-            fontSize: 'clamp(11px, 1vw, 13px)', // responsive
+            fontSize: 'clamp(14px, 1vw, 13px)', // responsive
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
             marginBottom: 12,
